@@ -24,6 +24,7 @@ variable "postgres_administrator_password" {
 variable "tags" {
   description = "Common tags"
   type        = map(string)
+ 
   default     = {
     environment = "staging"
     managed_by  = "terraform"

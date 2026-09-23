@@ -21,15 +21,14 @@ permissions:
 env:
   ARM_USE_OIDC: "true"
   ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-  ARM_TENANT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   TF_STATE_RG: rg-tfstate-uaenorth-01
   TF_STATE_SA: sttfstateuaenorth01
   TF_STATE_CONTAINER: tfstate
   TF_VAR_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
   TF_VAR_postgres_administrator_password: ${{ secrets.STAGING_POSTGRES_ADMIN_PASSWORD }}
-  TF_VAR_postgres_private_dns_zone_id: ${{ vars.STAGING_POSTGRES_PRIVATE_DNS_ZONE_ID }}
-  TF_VAR_redis_private_dns_zone_ids: ${{ vars.STAGING_REDIS_PRIVATE_DNS_ZONE_IDS }}
+ 
 
 defaults:
   run:
