@@ -27,10 +27,11 @@ secret, since OIDC needs no client secret):
 | `AZURE_CLIENT_ID` | your service principal's client ID |
 | `AZURE_TENANT_ID` | your tenant ID |
 | `AZURE_SUBSCRIPTION_ID` | your subscription ID |
-| `STAGING_POSTGRES_PRIVATE_DNS_ZONE_ID` | your `privatelink.postgres.database.azure.com` zone ID |
-| `PRODUCTION_POSTGRES_PRIVATE_DNS_ZONE_ID` | same, for prod |
-| `STAGING_REDIS_PRIVATE_DNS_ZONE_IDS` | your `privatelink.redis.cache.windows.net` zone ID(s) |
-| `PRODUCTION_REDIS_PRIVATE_DNS_ZONE_IDS` | same, for prod |
+
+Private DNS zones for PostgreSQL and Redis (`privatelink.postgres.database.azure.com`,
+`privatelink.redis.cache.windows.net`) are now created and linked by Terraform
+itself (`modules/private-dns-zone`) — no manual `az` commands or GitHub
+variables needed for these anymore.
 
 **Secrets** (same location, Secrets tab):
 | Name | Value |
@@ -42,12 +43,18 @@ You can remove `AZURE_CLIENT_SECRET` if you'd already added it — it's no
 longer used once OIDC is in place.
 
 **Environments** (Settings → Environments):
+- Create `hub` — no protection rules needed; hub changes are infrequent
+  (shared VNet/subnets) and auto-apply on merge like staging.
 - Create `staging` — no protection rules needed, or a light one if you prefer.
 - Create `production` — add **at least one required reviewer**. This is what
   makes `terraform apply` pause for manual approval on production changes.
 
 ## How the pipelines work
 
+- **`.github/workflows/terraform-hub.yml`** — same plan/apply pattern as
+  staging. Runs on pushes/PRs touching `environments/hub/**` or `modules/**`.
+  Applies automatically on merge to `main` (Environment `hub`, no approval
+  gate) since it only manages shared networking.
 - **`.github/workflows/terraform-staging.yml`** — runs on GitHub-hosted
   `ubuntu-latest` runners. Pull requests touching `environments/staging/**`
   or `modules/**` get a `terraform plan` posted as a PR comment. Merging to
@@ -68,7 +75,6 @@ cd environments/staging
 terraform init -backend-config=../../backend-config.hcl
 export TF_VAR_subscription_id="<sub-id>"
 export TF_VAR_postgres_administrator_password="<local-secret>"
-export TF_VAR_postgres_private_dns_zone_id="<zone-id>"
 terraform plan
 ```
 Local auth falls back to `az login` (Azure CLI auth) since `use_oidc = true`

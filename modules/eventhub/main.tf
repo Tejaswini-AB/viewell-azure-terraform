@@ -8,8 +8,8 @@ resource "azurerm_eventhub_namespace" "this" {
 }
 
 resource "azurerm_eventhub" "this" {
-  name                = var.eventhub_name
-  namespace_id        = azurerm_eventhub_namespace.this.id
-  partition_count     = var.partition_count
-  message_retention   = var.message_retention
+  name              = var.eventhub_name
+  namespace_id      = azurerm_eventhub_namespace.this.id
+  partition_count   = var.partition_count
+  message_retention = var.message_retention
 }

@@ -18,11 +18,12 @@ deploying Azure resources". Repeat three times with these exact values
 | Plan on pull requests | `https://token.actions.githubusercontent.com` | `repo:<ORG>/<REPO>:pull_request` | `api://AzureADTokenExchange` |
 | Apply on merge to main | `https://token.actions.githubusercontent.com` | `repo:<ORG>/<REPO>:ref:refs/heads/main` | `api://AzureADTokenExchange` |
 | Production apply (Environment-gated) | `https://token.actions.githubusercontent.com` | `repo:<ORG>/<REPO>:environment:production` | `api://AzureADTokenExchange` |
+| Hub apply (Environment-gated) | `https://token.actions.githubusercontent.com` | `repo:<ORG>/<REPO>:environment:hub` | `api://AzureADTokenExchange` |
 
 Equivalent via `az cli`, if you prefer:
 ```bash
-APP_ID="9687282c-6004-4750-b0a1-ca44fc0a50d2"
-ORG_REPO="https://github.com/Tejaswini-AB/viewell-azure-terraform.git"
+APP_ID="<your-existing-client-id>"
+ORG_REPO="<org>/<repo>"
 
 az ad app federated-credential create --id "$APP_ID" --parameters '{
   "name": "github-pull-requests",
@@ -44,6 +45,13 @@ az ad app federated-credential create --id "$APP_ID" --parameters '{
   "subject": "repo:'"$ORG_REPO"':environment:production",
   "audiences": ["api://AzureADTokenExchange"]
 }'
+
+az ad app federated-credential create --id "$APP_ID" --parameters '{
+  "name": "github-hub-environment",
+  "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:'"$ORG_REPO"':environment:hub",
+  "audiences": ["api://AzureADTokenExchange"]
+}'
 ```
 
 These three subjects must match exactly what the workflows trigger on
@@ -57,9 +65,9 @@ Settings → Secrets and variables → Actions.
 **Variables** (not sensitive):
 | Name | Value |
 |---|---|
-| `AZURE_CLIENT_ID` | '9687282c-6004-4750-b0a1-ca44fc0a50d2' |
-| `AZURE_TENANT_ID` | 'a86bc255-9bb7-4ee8-b30a-51fba84872aa' |
-| `AZURE_SUBSCRIPTION_ID` | 'e65d2463-7bd8-4e82-91ea-0a4e2b907e49' |
+| `AZURE_CLIENT_ID` | your existing client ID |
+| `AZURE_TENANT_ID` | your tenant ID |
+| `AZURE_SUBSCRIPTION_ID` | your subscription ID |
 
 You can now **remove** `AZURE_CLIENT_SECRET` from repo Secrets — it's no
 longer read by either workflow. Leave the Postgres admin password secrets

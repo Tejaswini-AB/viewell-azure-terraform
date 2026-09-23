@@ -38,11 +38,11 @@ module "rg_hub" {
 # Hub Virtual Network
 # ---------------------------------------------------------
 module "vnet_hub" {
-  source               = "../../modules/vnet"
-  name                 = "vnet-viwell-hub-uaenorth-01"
-  resource_group_name  = module.rg_hub.name
-  location             = var.location
-  address_space        = ["10.10.0.0/16"]
+  source              = "../../modules/vnet"
+  name                = "vnet-viwell-hub-uaenorth-01"
+  resource_group_name = module.rg_hub.name
+  location            = var.location
+  address_space       = ["10.10.0.0/16"]
 
   subnets = {
     "snet-ext-hub-uaenorth-01" = {

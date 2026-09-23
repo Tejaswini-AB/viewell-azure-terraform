@@ -12,7 +12,7 @@ variable "location" {
 variable "tags" {
   description = "Common tags"
   type        = map(string)
-  default = {
+  default     = {
     environment = "hub"
     managed_by  = "terraform"
   }

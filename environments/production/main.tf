@@ -38,11 +38,11 @@ module "rg_prod" {
 # Virtual Network
 # ---------------------------------------------------------
 module "vnet_prod" {
-  source               = "../../modules/vnet"
-  name                 = "vnet-viwell-prod-uaenorth-01"
-  resource_group_name  = module.rg_prod.name
-  location             = var.location
-  address_space        = ["10.30.0.0/16"]
+  source              = "../../modules/vnet"
+  name                = "vnet-viwell-prod-uaenorth-01"
+  resource_group_name = module.rg_prod.name
+  location            = var.location
+  address_space       = ["10.30.0.0/16"]
 
   subnets = {
     "snet-apps-prod-uaenorth-01" = {
@@ -57,8 +57,8 @@ module "vnet_prod" {
     # correct if the table's value was intentional.
     "snet-db-prod-uaenorth-01" = {
       address_prefixes   = ["10.30.0.192/27"]
-      delegation_name     = "postgres-delegation"
-      delegation_service  = "Microsoft.DBforPostgreSQL/flexibleServers"
+      delegation_name    = "postgres-delegation"
+      delegation_service = "Microsoft.DBforPostgreSQL/flexibleServers"
     }
   }
 
@@ -69,86 +69,105 @@ module "vnet_prod" {
 # ACR
 # ---------------------------------------------------------
 module "acr_prod" {
-  source                   = "../../modules/acr"
-  name                     = "acrviwellproduaenorth01"
-  resource_group_name      = module.rg_prod.name
-  location                 = var.location
-  sku                      = "Premium"
-  zone_redundancy_enabled  = true
-  tags                     = var.tags
+  source                  = "../../modules/acr"
+  name                    = "acrviwellproduaenorth01"
+  resource_group_name     = module.rg_prod.name
+  location                = var.location
+  sku                     = "Premium"
+  zone_redundancy_enabled = true
+  tags                    = var.tags
 }
 
 # ---------------------------------------------------------
 # AKS
 # ---------------------------------------------------------
 module "aks_prod" {
-  source                = "../../modules/aks"
-  name                  = "aks-viwell-prod-uaenorth-01"
-  resource_group_name   = module.rg_prod.name
-  location              = var.location
-  dns_prefix            = "aksviwellprod"
-  vnet_subnet_id         = module.vnet_prod.subnet_ids["snet-apps-prod-uaenorth-01"]
-  acr_id                = module.acr_prod.id
-  node_count            = 3
-  vm_size               = "Standard_D4s_v3"
-  availability_zones    = ["1", "2", "3"]
-  tags                  = var.tags
+  source              = "../../modules/aks"
+  name                = "aks-viwell-prod-uaenorth-01"
+  resource_group_name = module.rg_prod.name
+  location            = var.location
+  dns_prefix          = "aksviwellprod"
+  vnet_subnet_id      = module.vnet_prod.subnet_ids["snet-apps-prod-uaenorth-01"]
+  acr_id              = module.acr_prod.id
+  node_count          = 3
+  vm_size             = "Standard_D4s_v3"
+  availability_zones  = ["1", "2", "3"]
+  tags                = var.tags
 }
 
 # ---------------------------------------------------------
 # PostgreSQL Flexible Server
 # ---------------------------------------------------------
+# ---------------------------------------------------------
+# Private DNS Zones (PostgreSQL + Redis)
+# ---------------------------------------------------------
+module "postgres_dns_zone_prod" {
+  source              = "../../modules/private-dns-zone"
+  zone_name           = "privatelink.postgres.database.azure.com"
+  resource_group_name = module.rg_prod.name
+  vnet_id             = module.vnet_prod.vnet_id
+  tags                = var.tags
+}
+
+module "redis_dns_zone_prod" {
+  source              = "../../modules/private-dns-zone"
+  zone_name           = "privatelink.redis.cache.windows.net"
+  resource_group_name = module.rg_prod.name
+  vnet_id             = module.vnet_prod.vnet_id
+  tags                = var.tags
+}
+
 module "postgresql_prod" {
-  source                        = "../../modules/postgresql"
-  name                          = "psql-viwell-prod-uaenorth-01"
+  source                       = "../../modules/postgresql"
+  name                         = "psql-viwell-prod-uaenorth-01"
   resource_group_name          = module.rg_prod.name
-  location                      = var.location
-  administrator_login           = var.postgres_administrator_login
-  administrator_password        = var.postgres_administrator_password
-  delegated_subnet_id           = module.vnet_prod.subnet_ids["snet-db-prod-uaenorth-01"]
-  private_dns_zone_id           = var.postgres_private_dns_zone_id
-  sku_name                      = "GP_Standard_D2s_v3"
-  geo_redundant_backup_enabled  = true
-  backup_retention_days         = 14
-  zone                          = "1"
-  high_availability_enabled     = true
-  standby_availability_zone     = "2"
-  tags                          = var.tags
+  location                     = var.location
+  administrator_login          = var.postgres_administrator_login
+  administrator_password       = var.postgres_administrator_password
+  delegated_subnet_id          = module.vnet_prod.subnet_ids["snet-db-prod-uaenorth-01"]
+  private_dns_zone_id          = module.postgres_dns_zone_prod.id
+  sku_name                     = "GP_Standard_D2s_v3"
+  geo_redundant_backup_enabled = true
+  backup_retention_days        = 14
+  zone                         = "1"
+  high_availability_enabled    = true
+  standby_availability_zone    = "2"
+  tags                         = var.tags
 }
 
 # ---------------------------------------------------------
 # Function App
 # ---------------------------------------------------------
 module "function_app_prod" {
-  source                 = "../../modules/function-app"
-  name                   = "func-viwell-prod-uaenorth-01"
-  resource_group_name   = module.rg_prod.name
-  location                = var.location
-  storage_account_name   = "stviwellproduaenorth01"
+  source                           = "../../modules/function-app"
+  name                             = "func-viwell-prod-uaenorth-01"
+  resource_group_name              = module.rg_prod.name
+  location                         = var.location
+  storage_account_name             = "stviwellproduaenorth01"
   storage_account_replication_type = "ZRS"
-  service_plan_sku       = "EP1"
-  zone_balancing_enabled = true
-  service_plan_worker_count = 3
-  vnet_subnet_id          = module.vnet_prod.subnet_ids["snet-apps-prod-uaenorth-01"]
-  tags                    = var.tags
+  service_plan_sku                 = "EP1"
+  zone_balancing_enabled           = true
+  service_plan_worker_count        = 3
+  vnet_subnet_id                   = module.vnet_prod.subnet_ids["snet-apps-prod-uaenorth-01"]
+  tags                             = var.tags
 }
 
 # ---------------------------------------------------------
 # Redis Cache
 # ---------------------------------------------------------
 module "redis_prod" {
-  source                       = "../../modules/redis"
-  name                         = "redis-viwell-prod-uaenorth-01"
-  resource_group_name         = module.rg_prod.name
-  location                     = var.location
-  capacity                    = 1
-  family                       = "P"
-  sku_name                    = "Premium"
-  zones                        = ["1", "2", "3"]
-  enable_private_endpoint     = true
-  private_endpoint_subnet_id  = module.vnet_prod.subnet_ids["snet-prvtendpt-prod-uaenorth-01"]
-  private_dns_zone_ids        = var.redis_private_dns_zone_ids
-  tags                         = var.tags
+  source                     = "../../modules/redis"
+  name                       = "redis-viwell-prod-uaenorth-01"
+  resource_group_name        = module.rg_prod.name
+  location                   = var.location
+  capacity                   = 1
+  family                     = "P"
+  sku_name                   = "Premium"
+  zones                      = ["1", "2", "3"]
+  enable_private_endpoint    = true
+  private_endpoint_subnet_id = module.vnet_prod.subnet_ids["snet-prvtendpt-prod-uaenorth-01"]
+  private_dns_zone_ids       = [module.redis_dns_zone_prod.id]
+  tags                       = var.tags
 }
 
 # ---------------------------------------------------------
@@ -157,12 +176,12 @@ module "redis_prod" {
 # zone-enabled regions (UAE North qualifies) — no explicit config needed.
 # ---------------------------------------------------------
 module "eventhub_prod" {
-  source               = "../../modules/eventhub"
-  namespace_name       = "evhns-viwell-prod-uaenorth-01"
-  eventhub_name        = "evh-viwell-prod-uaenorth-01"
-  resource_group_name  = module.rg_prod.name
-  location             = var.location
-  sku                  = "Standard"
-  capacity             = 2
-  tags                 = var.tags
+  source              = "../../modules/eventhub"
+  namespace_name      = "evhns-viwell-prod-uaenorth-01"
+  eventhub_name       = "evh-viwell-prod-uaenorth-01"
+  resource_group_name = module.rg_prod.name
+  location            = var.location
+  sku                 = "Standard"
+  capacity            = 2
+  tags                = var.tags
 }

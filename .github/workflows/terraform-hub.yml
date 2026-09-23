@@ -1,15 +1,15 @@
-name: Terraform - Production
+name: Terraform - Hub
 
 on:
   pull_request:
     branches: [main]
     paths:
-      - "environments/production/**"
+      - "environments/hub/**"
       - "modules/**"
   push:
     branches: [main]
     paths:
-      - "environments/production/**"
+      - "environments/hub/**"
       - "modules/**"
   workflow_dispatch: {}
 
@@ -20,18 +20,17 @@ permissions:
 
 env:
   ARM_USE_OIDC: "true"
-  ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-  ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-  ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+ ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   TF_STATE_RG: rg-tfstate-uaenorth-01
   TF_STATE_SA: sttfstateuaenorth01
   TF_STATE_CONTAINER: tfstate
   TF_VAR_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-  TF_VAR_postgres_administrator_password: ${{ secrets.PRODUCTION_POSTGRES_ADMIN_PASSWORD }}
 
 defaults:
   run:
-    working-directory: environments/production
+    working-directory: environments/hub
 
 jobs:
   plan:
@@ -69,19 +68,19 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const plan = fs.readFileSync('environments/production/plan_output.txt', 'utf8').slice(-60000);
+            const plan = fs.readFileSync('environments/hub/plan_output.txt', 'utf8').slice(-60000);
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `#### ⚠️ Terraform Plan — PRODUCTION\n\`\`\`\n${plan}\n\`\`\``
+              body: `#### Terraform Plan — Hub\n\`\`\`\n${plan}\n\`\`\``
             });
 
       - name: Upload plan artifact
         uses: actions/upload-artifact@v4
         with:
-          name: production-tfplan
-          path: environments/production/tfplan
+          name: hub-tfplan
+          path: environments/hub/tfplan
           retention-days: 5
 
   apply:
@@ -89,10 +88,7 @@ jobs:
     needs: plan
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    # The 'production' Environment must be configured in GitHub repo settings
-    # with at least one required reviewer. The apply job will pause here
-    # until someone approves it — this is the manual gate for prod changes.
-    environment: production
+    environment: hub
     steps:
       - name: Checkout
         uses: actions/checkout@v4

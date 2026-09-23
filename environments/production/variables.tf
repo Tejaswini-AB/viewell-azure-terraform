@@ -21,21 +21,10 @@ variable "postgres_administrator_password" {
   sensitive   = true
 }
 
-variable "postgres_private_dns_zone_id" {
-  description = "Private DNS zone ID for PostgreSQL Flexible Server (e.g. privatelink.postgres.database.azure.com)"
-  type        = string
-}
-
-variable "redis_private_dns_zone_ids" {
-  description = "Private DNS zone IDs for the Redis private endpoint (privatelink.redis.cache.windows.net)"
-  type        = list(string)
-  default     = []
-}
-
 variable "tags" {
   description = "Common tags"
   type        = map(string)
-  default = {
+  default     = {
     environment = "production"
     managed_by  = "terraform"
   }
