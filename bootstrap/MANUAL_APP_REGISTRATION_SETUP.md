@@ -22,8 +22,8 @@ deploying Azure resources". Repeat three times with these exact values
 
 Equivalent via `az cli`, if you prefer:
 ```bash
-APP_ID="<your-existing-client-id>"
-ORG_REPO="<org>/<repo>"
+APP_ID="9687282c-6004-4750-b0a1-ca44fc0a50d2"
+ORG_REPO="https://github.com/Tejaswini-AB/viewell-azure-terraform.git"
 
 az ad app federated-credential create --id "$APP_ID" --parameters '{
   "name": "github-pull-requests",
