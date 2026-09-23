@@ -19,6 +19,9 @@ provider "azurerm" {
   features {}
   subscription_id = var.subscription_id
   use_oidc        = true
+  # client_id and tenant_id are NOT set here — the provider reads them
+  # automatically from ARM_CLIENT_ID / ARM_TENANT_ID environment variables.
+  # No client secret is used at all with OIDC.
 }
 
 # ---------------------------------------------------------

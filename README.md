@@ -10,24 +10,23 @@ bash bootstrap/create-state-storage.sh
 Creates `rg-tfstate-uaenorth-01` / `sttfstateuaenorth01` / container `tfstate`,
 with blob versioning and 30-day soft delete enabled.
 
-### 2. Create the GitHub OIDC service principal
-Edit `GITHUB_ORG` and `GITHUB_REPO` in the script first, then:
-```bash
-bash bootstrap/create-github-oidc-sp.sh
-```
-This creates an App Registration with **no client secret** — GitHub Actions
-authenticates using short-lived OIDC tokens instead. It grants the SP
-`Contributor` on the subscription; narrow this to specific resource groups
-later if you want tighter scoping.
+### 2. Add OIDC to your existing service principal
+You already have an App Registration — add federated credentials to that
+same one rather than creating a new one. Follow
+**`bootstrap/MANUAL_APP_REGISTRATION_SETUP.md`** for the exact federated
+credential subject strings the workflows require (these must match
+precisely, or the OIDC token exchange fails at runtime), plus which values
+go where in GitHub repo settings. Once confirmed working, the client secret
+is no longer needed and can be deleted.
 
 ### 3. Configure GitHub repo settings
-**Variables** (Settings → Secrets and variables → Actions → Variables — these
-are not secret, since OIDC needs no client secret):
+**Variables** (Settings → Secrets and variables → Actions → Variables — not
+secret, since OIDC needs no client secret):
 | Name | Value |
 |---|---|
-| `AZURE_CLIENT_ID` | from step 2 output |
-| `AZURE_TENANT_ID` | from step 2 output |
-| `AZURE_SUBSCRIPTION_ID` | from step 2 output |
+| `AZURE_CLIENT_ID` | your service principal's client ID |
+| `AZURE_TENANT_ID` | your tenant ID |
+| `AZURE_SUBSCRIPTION_ID` | your subscription ID |
 | `STAGING_POSTGRES_PRIVATE_DNS_ZONE_ID` | your `privatelink.postgres.database.azure.com` zone ID |
 | `PRODUCTION_POSTGRES_PRIVATE_DNS_ZONE_ID` | same, for prod |
 | `STAGING_REDIS_PRIVATE_DNS_ZONE_IDS` | your `privatelink.redis.cache.windows.net` zone ID(s) |
@@ -38,6 +37,9 @@ are not secret, since OIDC needs no client secret):
 |---|---|
 | `STAGING_POSTGRES_ADMIN_PASSWORD` | strong password, staging DB |
 | `PRODUCTION_POSTGRES_ADMIN_PASSWORD` | strong password, prod DB |
+
+You can remove `AZURE_CLIENT_SECRET` if you'd already added it — it's no
+longer used once OIDC is in place.
 
 **Environments** (Settings → Environments):
 - Create `staging` — no protection rules needed, or a light one if you prefer.

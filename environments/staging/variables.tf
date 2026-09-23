@@ -18,6 +18,7 @@ variable "postgres_administrator_login" {
 variable "postgres_administrator_password" {
   description = "PostgreSQL administrator password (pass via TF_VAR_ or a gitignored *.tfvars, never hardcoded)"
   type        = string
+  default     = "Password123"
   sensitive   = true
 }
 
