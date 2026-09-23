@@ -1,0 +1,115 @@
+name: Terraform - Production
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "environments/production/**"
+      - "modules/**"
+  push:
+    branches: [main]
+    paths:
+      - "environments/production/**"
+      - "modules/**"
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write   # required for OIDC federated login
+  contents: read
+  pull-requests: write  # required to comment the plan on the PR
+
+env:
+  ARM_USE_OIDC: "true"
+  ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  TF_STATE_RG: rg-tfstate-uaenorth-01
+  TF_STATE_SA: sttfstateuaenorth01
+  TF_STATE_CONTAINER: tfstate
+  TF_VAR_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  TF_VAR_postgres_administrator_password: ${{ secrets.PRODUCTION_POSTGRES_ADMIN_PASSWORD }}
+  TF_VAR_postgres_private_dns_zone_id: ${{ vars.PRODUCTION_POSTGRES_PRIVATE_DNS_ZONE_ID }}
+  TF_VAR_redis_private_dns_zone_ids: ${{ vars.PRODUCTION_REDIS_PRIVATE_DNS_ZONE_IDS }}
+
+defaults:
+  run:
+    working-directory: environments/production
+
+jobs:
+  plan:
+    name: Plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive ../..
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${TF_STATE_RG}" \
+            -backend-config="storage_account_name=${TF_STATE_SA}" \
+            -backend-config="container_name=${TF_STATE_CONTAINER}"
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color -out=tfplan | tee plan_output.txt
+
+      - name: Comment plan on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('environments/production/plan_output.txt', 'utf8').slice(-60000);
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `#### ⚠️ Terraform Plan — PRODUCTION\n\`\`\`\n${plan}\n\`\`\``
+            });
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-tfplan
+          path: environments/production/tfplan
+          retention-days: 5
+
+  apply:
+    name: Apply
+    needs: plan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # The 'production' Environment must be configured in GitHub repo settings
+    # with at least one required reviewer. The apply job will pause here
+    # until someone approves it — this is the manual gate for prod changes.
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${TF_STATE_RG}" \
+            -backend-config="storage_account_name=${TF_STATE_SA}" \
+            -backend-config="container_name=${TF_STATE_CONTAINER}"
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve
