@@ -20,9 +20,9 @@ permissions:
 
 env:
   ARM_USE_OIDC: "true"
-  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-  ARM_TENANT_ID: ${{ secrets.ARM_CLIENT_ID }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_CLIENT_ID: "9687282c-6004-4750-b0a1-ca44fc0a50d2"
+  ARM_TENANT_ID: "a86bc255-9bb7-4ee8-b30a-51fba84872aa"
+  ARM_SUBSCRIPTION_ID: "e65d2463-7bd8-4e82-91ea-0a4e2b907e49"
   TF_STATE_RG: rg-tfstate-uaenorth-01
   TF_STATE_SA: sttfstateuaenorth01
   TF_STATE_CONTAINER: tfstate
