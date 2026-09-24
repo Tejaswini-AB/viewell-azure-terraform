@@ -38,6 +38,12 @@ jobs:
     name: Plan
     runs-on: ubuntu-latest
     steps:
+      - name: Debug trigger context
+        run: |
+          echo "event_name=${{ github.event_name }}"
+          echo "ref=${{ github.ref }}"
+          echo "ref_name=${{ github.ref_name }}"
+          
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -83,12 +89,6 @@ jobs:
           name: hub-tfplan
           path: environments/hub/tfplan
           retention-days: 5
-
-      - name: Debug trigger context
-        run: |
-          echo "event_name=${{ github.event_name }}"
-          echo "ref=${{ github.ref }}"
-          echo "ref_name=${{ github.ref_name }}"
 
   apply:
     name: Apply
