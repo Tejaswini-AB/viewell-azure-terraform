@@ -19,14 +19,15 @@ permissions:
   pull-requests: write  # required to comment the plan on the PR
 
 env:
-  ARM_USE_OIDC: "true"
-  ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-  ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-  ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+ # ARM_USE_OIDC: "true"
+  ARM_CLIENT_ID:  ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   TF_STATE_RG: rg-tfstate-uaenorth-01
   TF_STATE_SA: sttfstateuaenorth01
   TF_STATE_CONTAINER: tfstate
-  TF_VAR_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+  TF_VAR_subscription_id: "e65d2463-7bd8-4e82-91ea-0a4e2b907e49"
 
 defaults:
   run:
@@ -42,7 +43,7 @@ jobs:
           echo "event_name=${{ github.event_name }}"
           echo "ref=${{ github.ref }}"
           echo "ref_name=${{ github.ref_name }}"
-
+          
       - name: Checkout
         uses: actions/checkout@v4
 
