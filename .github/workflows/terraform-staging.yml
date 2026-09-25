@@ -27,7 +27,8 @@ env:
   TF_STATE_RG: rg-tfstate-uaenorth-01
   TF_STATE_SA: sttfstateuaenorth01
   TF_STATE_CONTAINER: tfstate
-  TF_VAR_subscription_id: "e65d2463-7bd8-4e82-91ea-0a4e2b907e49"
+  TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  TF_VAR_postgres_administrator_password: ${{ secrets.TF_VAR_postgres_administrator_password }}
  
 
 defaults:
