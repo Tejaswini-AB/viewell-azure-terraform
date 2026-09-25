@@ -50,7 +50,8 @@ module "vnet_staging" {
     }
     "snet-funcapp-nonprod-uaenorth-01" = {
       address_prefixes   = ["10.20.2.0/24"]
-      delegation_service = "Microsoft.Web/ServerFarms"
+      delegation_name    = "appservice-delegation"
+      delegation_service = "Microsoft.Web/serverFarms"
     }
     "snet-prvtendpt-nonprod-uaenorth-01" = {
       address_prefixes   = ["10.20.0.128/26"]
