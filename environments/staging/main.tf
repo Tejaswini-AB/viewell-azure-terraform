@@ -48,7 +48,11 @@ module "vnet_staging" {
     "snet-apps-nonprod-uaenorth-01" = {
       address_prefixes = ["10.20.0.64/26"]
     }
-    "snet-prvtendpt-nonprod-uaenorth-01" = {
+    "snet-funcapp-nonprod-uaenorth-01" = {
+      address_prefixes   = ["10.20.2.0/24"]
+      delegation_service = "Microsoft.Web/ServerFarms"
+    }
+     "snet-prvtendpt-nonprod-uaenorth-01" = {
       address_prefixes   = ["10.20.0.128/26"]
       delegation_service = "Microsoft.Web/ServerFarms"
     }
@@ -134,7 +138,7 @@ module "function_app_staging" {
   resource_group_name  = module.rg_staging.name
   location             = var.location
   storage_account_name = "stviwellnpuaenorth01"
-  vnet_subnet_id       = module.vnet_staging.subnet_ids["snet-apps-nonprod-uaenorth-01"]
+  vnet_subnet_id       = module.vnet_staging.subnet_ids["snet-funcapp-nonprod-uaenorth-01"]
   tags                 = var.tags
 }
 
