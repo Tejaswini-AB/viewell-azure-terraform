@@ -27,7 +27,7 @@ resource "azurerm_linux_function_app" "this" {
   storage_account_access_key = azurerm_storage_account.this.primary_access_key
   app_settings               = var.app_settings
   virtual_network_subnet_id  = var.vnet_subnet_id
-  delegated_subnet_id          = var.delegated_subnet_id
+  delegated_subnet_id        = var.delegated_subnet_id
   tags                       = var.tags
 
   site_config {}
