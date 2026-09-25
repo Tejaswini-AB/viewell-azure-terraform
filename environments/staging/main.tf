@@ -52,7 +52,7 @@ module "vnet_staging" {
       address_prefixes   = ["10.20.2.0/24"]
       delegation_service = "Microsoft.Web/ServerFarms"
     }
-     "snet-prvtendpt-nonprod-uaenorth-01" = {
+    "snet-prvtendpt-nonprod-uaenorth-01" = {
       address_prefixes   = ["10.20.0.128/26"]
       delegation_service = "Microsoft.Web/ServerFarms"
     }
