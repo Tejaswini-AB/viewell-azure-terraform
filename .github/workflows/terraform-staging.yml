@@ -20,13 +20,13 @@ permissions:
 
 env:
  ARM_CLIENT_ID:  ${{ secrets.AZURE_CLIENT_ID }}
-  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-  TF_STATE_RG: rg-tfstate-uaenorth-01
-  TF_STATE_SA: sttfstateuaenorth01
-  TF_STATE_CONTAINER: tfstate
-  TF_VAR_subscription_id: "e65d2463-7bd8-4e82-91ea-0a4e2b907e49"
+ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+TF_STATE_RG: rg-tfstate-uaenorth-01
+TF_STATE_SA: sttfstateuaenorth01
+TF_STATE_CONTAINER: tfstate
+TF_VAR_subscription_id: "e65d2463-7bd8-4e82-91ea-0a4e2b907e49"
  
 
 defaults:
