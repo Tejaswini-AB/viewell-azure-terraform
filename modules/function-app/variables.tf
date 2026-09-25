@@ -21,7 +21,7 @@ variable "storage_account_name" {
 variable "service_plan_sku" {
   description = "SKU for the App Service Plan, e.g. Y1 (consumption), EP1 (premium)"
   type        = string
-  default     = "Y1"
+  default     = "EP1"
 }
 
 variable "os_type" {
