@@ -125,6 +125,7 @@ module "postgresql_staging" {
   administrator_password = var.postgres_administrator_password
   delegated_subnet_id    = module.vnet_staging.subnet_ids["snet-db-nonprod-uaenorth-01"]
   private_dns_zone_id    = module.postgres_dns_zone_staging.id
+  public_network_access_enabled = false
   sku_name               = "B_Standard_B1ms"
   tags                   = var.tags
 }
