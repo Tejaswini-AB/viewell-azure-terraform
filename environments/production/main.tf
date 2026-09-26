@@ -92,7 +92,7 @@ module "aks_prod" {
   acr_id              = module.acr_prod.id
   node_count          = 3
   vm_size             = "Standard_D4s_v3"
-  availability_zones  = ["1", "2", "3"]
+  availability_zones  = ["1", "2"]
   tags                = var.tags
 }
 
