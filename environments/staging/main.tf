@@ -150,9 +150,8 @@ module "redis_staging" {
   name                       = "redis-viwell-nonprod-uaenorth-01"
   resource_group_name        = module.rg_staging.name
   location                   = var.location
-  capacity                   = 1
-  family                     = "C"
-  sku_name                   = "Standard"
+  sku_name                   = "Balanced_B0"
+  high_availability_enabled  = false
   enable_private_endpoint    = true
   private_endpoint_subnet_id = module.vnet_staging.subnet_ids["snet-prvtendpt-nonprod-uaenorth-01"]
   private_dns_zone_ids       = [module.redis_dns_zone_staging.id]

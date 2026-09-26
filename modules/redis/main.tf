@@ -1,15 +1,23 @@
-resource "azurerm_redis_cache" "this" {
-  name                          = var.name
-  resource_group_name           = var.resource_group_name
-  location                      = var.location
-  capacity                      = var.capacity
-  family                        = var.family
-  sku_name                      = var.sku_name
-  minimum_tls_version           = var.minimum_tls_version
-  public_network_access_enabled = var.enable_private_endpoint ? false : var.public_network_access_enabled
-  non_ssl_port_enabled          = false
-  zones                         = length(var.zones) > 0 ? var.zones : null
-  tags                          = var.tags
+# Azure Cache for Redis (classic) is being retired by Microsoft in favor of
+# Azure Managed Redis (built on Redis Enterprise architecture). This module
+# uses azurerm_managed_redis, which supersedes both azurerm_redis_cache and
+# azurerm_redis_enterprise_cluster/database.
+# See: https://aka.ms/AzureCacheForRedisRetirement
+
+resource "azurerm_managed_redis" "this" {
+  name                      = var.name
+  resource_group_name       = var.resource_group_name
+  location                  = var.location
+  sku_name                  = var.sku_name
+  high_availability_enabled = var.high_availability_enabled
+  minimum_tls_version       = var.minimum_tls_version
+  public_network_access     = var.enable_private_endpoint ? "Disabled" : "Enabled"
+  tags                      = var.tags
+
+  default_database {
+    clustering_policy = var.clustering_policy
+    eviction_policy   = var.eviction_policy
+  }
 }
 
 resource "azurerm_private_endpoint" "this" {
@@ -22,8 +30,8 @@ resource "azurerm_private_endpoint" "this" {
 
   private_service_connection {
     name                           = "${var.name}-psc"
-    private_connection_resource_id = azurerm_redis_cache.this.id
-    subresource_names              = ["redisCache"]
+    private_connection_resource_id = azurerm_managed_redis.this.id
+    subresource_names              = ["redisEnterprise"]
     is_manual_connection           = false
   }
 
