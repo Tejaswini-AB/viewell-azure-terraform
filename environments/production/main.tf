@@ -48,13 +48,14 @@ module "vnet_prod" {
     "snet-apps-prod-uaenorth-01" = {
       address_prefixes = ["10.30.0.64/26"]
     }
+    "snet-funcapp-prod-uaenorth-01" = {
+      address_prefixes   = ["10.30.2.0/26"]
+      delegation_name    = "appservice-delegation"
+      delegation_service = "Microsoft.Web/serverFarms"
+    }
     "snet-prvtendpt-prod-uaenorth-01" = {
       address_prefixes = ["10.30.0.128/26"]
     }
-    # NOTE: source table listed this as 10.20.0.192/27, which falls inside
-    # the staging (10.20.0.0/16) address space, not prod (10.30.0.0/16).
-    # Using 10.30.0.192/27 here — confirm with your network team and
-    # correct if the table's value was intentional.
     "snet-db-prod-uaenorth-01" = {
       address_prefixes   = ["10.30.0.192/27"]
       delegation_name    = "postgres-delegation"
@@ -148,22 +149,20 @@ module "function_app_prod" {
   service_plan_sku                 = "EP1"
   zone_balancing_enabled           = true
   service_plan_worker_count        = 3
-  vnet_subnet_id                   = module.vnet_prod.subnet_ids["snet-apps-prod-uaenorth-01"]
+  vnet_subnet_id                   = module.vnet_prod.subnet_ids["snet-funcapp-prod-uaenorth-01"]
   tags                             = var.tags
 }
 
 # ---------------------------------------------------------
 # Redis Cache
 # ---------------------------------------------------------
-module "redis_prod" {
+module "redis_staging" {
   source                     = "../../modules/redis"
-  name                       = "redis-viwell-prod-uaenorth-01"
-  resource_group_name        = module.rg_prod.name
+  name                       = "redis-viwell-nonprod-uaenorth-01"
+  resource_group_name        = module.rg_staging.name
   location                   = var.location
-  capacity                   = 1
-  family                     = "P"
-  sku_name                   = "Premium"
-  zones                      = ["1", "2", "3"]
+  sku_name                   = "Balanced_B0"
+  high_availability_enabled  = false
   enable_private_endpoint    = true
   private_endpoint_subnet_id = module.vnet_prod.subnet_ids["snet-prvtendpt-prod-uaenorth-01"]
   private_dns_zone_ids       = [module.redis_dns_zone_prod.id]
