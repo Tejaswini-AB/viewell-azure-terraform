@@ -156,10 +156,10 @@ module "function_app_prod" {
 # ---------------------------------------------------------
 # Redis Cache
 # ---------------------------------------------------------
-module "redis_staging" {
+module "redis_prod" {
   source                     = "../../modules/redis"
-  name                       = "redis-viwell-nonprod-uaenorth-01"
-  resource_group_name        = module.rg_staging.name
+  name                       = "redis-viwell-prod-uaenorth-01"
+  resource_group_name        = module.rg_prod.name
   location                   = var.location
   sku_name                   = "Balanced_B0"
   high_availability_enabled  = false
