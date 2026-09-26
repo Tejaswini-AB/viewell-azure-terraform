@@ -117,16 +117,17 @@ module "redis_dns_zone_staging" {
 # PostgreSQL Flexible Server
 # ---------------------------------------------------------
 module "postgresql_staging" {
-  source                 = "../../modules/postgresql"
-  name                   = "psql-viwell-nonprod-uaenorth-01"
-  resource_group_name    = module.rg_staging.name
-  location               = var.location
-  administrator_login    = var.postgres_administrator_login
-  administrator_password = var.postgres_administrator_password
-  delegated_subnet_id    = module.vnet_staging.subnet_ids["snet-db-nonprod-uaenorth-01"]
-  private_dns_zone_id    = module.postgres_dns_zone_staging.id
-  sku_name               = "B_Standard_B1ms"
-  tags                   = var.tags
+  source                        = "../../modules/postgresql"
+  name                          = "psql-viwell-nonprod-uaenorth-01"
+  resource_group_name           = module.rg_staging.name
+  location                      = var.location
+  administrator_login           = var.postgres_administrator_login
+  administrator_password        = var.postgres_administrator_password
+  delegated_subnet_id           = module.vnet_staging.subnet_ids["snet-db-nonprod-uaenorth-01"]
+  private_dns_zone_id           = module.postgres_dns_zone_staging.id
+  sku_name                      = "B_Standard_B1ms"
+  public_network_access_enabled = false
+  tags                          = var.tags
 }
 
 # ---------------------------------------------------------
