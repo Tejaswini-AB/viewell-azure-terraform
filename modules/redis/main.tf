@@ -10,9 +10,9 @@ resource "azurerm_managed_redis" "this" {
   location                  = var.location
   sku_name                  = var.sku_name
   high_availability_enabled = var.high_availability_enabled
-  minimum_tls_version       = var.minimum_tls_version
-  public_network_access     = var.enable_private_endpoint ? "Disabled" : "Enabled"
-  tags                      = var.tags
+  # minimum_tls_version       = var.minimum_tls_version
+  public_network_access = var.enable_private_endpoint ? "Disabled" : "Enabled"
+  tags                  = var.tags
 
   default_database {
     clustering_policy = var.clustering_policy
