@@ -18,6 +18,12 @@ variable "storage_account_name" {
   type        = string
 }
 
+variable "private_endpoint_subnet_id" {
+  description = "Subnet ID to deploy the private endpoint into (required if enable_private_endpoint is true)"
+  type        = string
+  default     = null
+}
+
 variable "appservice_plan_name" {
   description = "Name of the App Service Plan"
   type        = string
