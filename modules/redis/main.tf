@@ -22,14 +22,14 @@ resource "azurerm_managed_redis" "this" {
 
 resource "azurerm_private_endpoint" "this" {
   count               = var.enable_private_endpoint ? 1 : 0
-  name                = "${var.name}-pe"
+  name                = "pe-${var.name}"
   resource_group_name = var.resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_subnet_id
   tags                = var.tags
 
   private_service_connection {
-    name                           = "${var.name}-psc"
+    name                           = "psc-${var.name}"
     private_connection_resource_id = azurerm_managed_redis.this.id
     subresource_names              = ["redisEnterprise"]
     is_manual_connection           = false

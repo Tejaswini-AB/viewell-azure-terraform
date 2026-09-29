@@ -27,9 +27,16 @@ provider "azurerm" {
 # ---------------------------------------------------------
 # Resource Group
 # ---------------------------------------------------------
+module "rg_network_staging" {
+  source   = "../../modules/resource-group"
+  name     = "rg-network-staging-uaenorth-01"
+  location = var.location
+  tags     = var.tags
+}
+
 module "rg_staging" {
   source   = "../../modules/resource-group"
-  name     = "rg-vnet-staging-uaenorth-01"
+  name     = "rg-viwell-staging-uaenorth-01"
   location = var.location
   tags     = var.tags
 }
@@ -40,7 +47,7 @@ module "rg_staging" {
 module "vnet_staging" {
   source              = "../../modules/vnet"
   name                = "vnet-viwell-nonprod-uaenorth-01"
-  resource_group_name = module.rg_staging.name
+  resource_group_name = module.rg_network_staging.name
   location            = var.location
   address_space       = ["10.20.0.0/16"]
 
@@ -125,7 +132,7 @@ module "postgresql_staging" {
   administrator_password = var.postgres_administrator_password
   delegated_subnet_id    = module.vnet_staging.subnet_ids["snet-db-nonprod-uaenorth-01"]
   private_dns_zone_id    = module.postgres_dns_zone_staging.id
-  sku_name               = "B_Standard_B1ms"
+  sku_name               = "GP_Standard_D2ds_v5"
   tags                   = var.tags
 }
 
@@ -171,3 +178,17 @@ module "eventhub_staging" {
   capacity            = 1
   tags                = var.tags
 }
+
+# ---------------------------------------------------------
+# KeyVault
+# ---------------------------------------------------------
+module "keyvault_staging" {
+  source              = "../../modules/keyvault"
+  name      = "kv-viewell-uaenorth-01"
+  resource_group_name = module.rg_staging.name
+  location            = var.location
+  private_endpoint_subnet_id = module.vnet_staging.subnet_ids["snet-prvtendpt-nonprod-uaenorth-01"]
+  sku                 = "Standard"
+  tags                = var.tags
+}
+

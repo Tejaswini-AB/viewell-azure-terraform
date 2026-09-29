@@ -27,9 +27,16 @@ provider "azurerm" {
 # ---------------------------------------------------------
 # Resource Group
 # ---------------------------------------------------------
+module "rg_network_prod" {
+  source   = "../../modules/resource-group"
+  name     = "rg-network-staging-uaenorth-01"
+  location = var.location
+  tags     = var.tags
+}
+
 module "rg_prod" {
   source   = "../../modules/resource-group"
-  name     = "rg-vnet-prod-uaenorth-01"
+  name     = "rg-viwell-staging-uaenorth-01"
   location = var.location
   tags     = var.tags
 }
@@ -40,7 +47,7 @@ module "rg_prod" {
 module "vnet_prod" {
   source              = "../../modules/vnet"
   name                = "vnet-viwell-prod-uaenorth-01"
-  resource_group_name = module.rg_prod.name
+  resource_group_name = module.rg_network_prod.name
   location            = var.location
   address_space       = ["10.30.0.0/16"]
 

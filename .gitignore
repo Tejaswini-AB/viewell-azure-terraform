@@ -7,6 +7,7 @@ tfplan
 plan_output.txt
 crash.log
 crash.*.log
+terraform-production.yml
 
 # Variable files that may hold secrets
 *.tfvars
