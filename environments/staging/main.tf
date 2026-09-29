@@ -174,14 +174,15 @@ module "postgresql_stg" {
 # Function App
 # ---------------------------------------------------------
 module "function_app_stg" {
-  source               = "../../modules/function-app"
-  name                 = "func-viwell-stg-uaenorth-01"
-  resource_group_name  = module.rg_stg.name
-  location             = var.location
-  storage_account_name = "stviwellfunuaenorth01"
-  appservice_plan_name = "asp-viwell-stg-uaenorth-01"
-  vnet_subnet_id       = module.vnet_stg.subnet_ids["snet-funcapp-stg-uaenorth-01"]
-  tags                 = var.tags
+  source                     = "../../modules/function-app"
+  name                       = "func-viwell-stg-uaenorth-01"
+  resource_group_name        = module.rg_stg.name
+  location                   = var.location
+  storage_account_name       = "stviwellfunuaenorth01"
+  appservice_plan_name       = "asp-viwell-stg-uaenorth-01"
+  vnet_subnet_id             = module.vnet_stg.subnet_ids["snet-funcapp-stg-uaenorth-01"]
+  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaenorth-01"]
+  tags                       = var.tags
 }
 
 # ---------------------------------------------------------
