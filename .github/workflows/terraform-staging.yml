@@ -110,4 +110,4 @@ jobs:
             -backend-config="container_name=${TF_STATE_CONTAINER}"
 
       - name: Terraform apply
-        run: terraform apply # -auto-approve
+        run: terraform apply -auto-approve
