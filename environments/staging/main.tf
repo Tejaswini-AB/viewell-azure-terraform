@@ -71,7 +71,7 @@ module "vnet_stg" {
           description                = "Allow HTTPS inbound"
         }
       ]
-  }
+    }
     "snet-funcapp-stg-uaenorth-01" = {
       address_prefixes   = ["10.20.2.0/26"]
       delegation_name    = "appservice-delegation"
