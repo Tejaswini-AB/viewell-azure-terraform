@@ -9,9 +9,9 @@ terraform {
 
   # Partial backend config: resource_group_name, storage_account_name and
   # container_name are supplied at `terraform init` time via -backend-config
-  # (see .github/workflows/terraform-staging.yml, or backend-config.hcl for local use).
+  # (see .github/workflows/terraform-stg.yml, or backend-config.hcl for local use).
   backend "azurerm" {
-    key = "staging.terraform.tfstate"
+    key = "stg.terraform.tfstate"
   }
 }
 
@@ -27,16 +27,16 @@ provider "azurerm" {
 # ---------------------------------------------------------
 # Resource Group
 # ---------------------------------------------------------
-module "rg_network_staging" {
+module "rg_network_stg" {
   source   = "../../modules/resource-group"
-  name     = "rg-network-staging-uaenorth-01"
+  name     = "rg-network-stg-uaenorth-01"
   location = var.location
   tags     = var.tags
 }
 
-module "rg_staging" {
+module "rg_stg" {
   source   = "../../modules/resource-group"
-  name     = "rg-viwell-staging-uaenorth-01"
+  name     = "rg-viwell-stg-uaenorth-01"
   location = var.location
   tags     = var.tags
 }
@@ -44,26 +44,43 @@ module "rg_staging" {
 # ---------------------------------------------------------
 # Virtual Network
 # ---------------------------------------------------------
-module "vnet_staging" {
+module "vnet_stg" {
   source              = "../../modules/vnet"
-  name                = "vnet-viwell-staging-uaenorth-01"
-  resource_group_name = module.rg_network_staging.name
+  name                = "vnet-viwell-stg-uaenorth-01"
+  resource_group_name = module.rg_network_stg.name
   location            = var.location
   address_space       = ["10.20.0.0/16"]
 
   subnets = {
-    "snet-apps-staging-uaenorth-01" = {
+    "snet-apps-stg-uaenorth-01" = {
       address_prefixes = ["10.20.0.64/26"]
-    }
-    "snet-funcapp-staging-uaenorth-01" = {
+
+      nsg_name = "nsg-app"
+
+      nsg_rules = [
+        {
+          name                       = "Allow-HTTPS"
+          priority                   = 100
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "443"
+          source_address_prefix      = "*"
+          destination_address_prefix = "*"
+          description                = "Allow HTTPS inbound"
+        }
+      ]
+  }
+    "snet-funcapp-stg-uaenorth-01" = {
       address_prefixes   = ["10.20.2.0/26"]
       delegation_name    = "appservice-delegation"
       delegation_service = "Microsoft.Web/serverFarms"
     }
-    "snet-prvtendpt-staging-uaenorth-01" = {
+    "snet-prvtendpt-stg-uaenorth-01" = {
       address_prefixes = ["10.20.0.128/26"]
     }
-    "snet-db-staging-uaenorth-01" = {
+    "snet-db-stg-uaenorth-01" = {
       address_prefixes   = ["10.20.0.192/27"]
       delegation_name    = "postgres-delegation"
       delegation_service = "Microsoft.DBforPostgreSQL/flexibleServers"
@@ -76,10 +93,10 @@ module "vnet_staging" {
 # ---------------------------------------------------------
 # ACR
 # ---------------------------------------------------------
-module "acr_staging" {
+module "acr_stg" {
   source              = "../../modules/acr"
-  name                = "acrviwellstaginguaenorth01"
-  resource_group_name = module.rg_staging.name
+  name                = "acrviwellstguaenorth01"
+  resource_group_name = module.rg_stg.name
   location            = var.location
   sku                 = "Standard"
   tags                = var.tags
@@ -88,14 +105,14 @@ module "acr_staging" {
 # ---------------------------------------------------------
 # AKS
 # ---------------------------------------------------------
-module "aks_staging" {
+module "aks_stg" {
   source              = "../../modules/aks"
-  name                = "aks-viwell-staging-uaenorth-01"
-  resource_group_name = module.rg_staging.name
+  name                = "aks-viwell-stg-uaenorth-01"
+  resource_group_name = module.rg_stg.name
   location            = var.location
-  dns_prefix          = "aksviwellstaging"
-  vnet_subnet_id      = module.vnet_staging.subnet_ids["snet-apps-staging-uaenorth-01"]
-  acr_id              = module.acr_staging.id
+  dns_prefix          = "aksviwellstg"
+  vnet_subnet_id      = module.vnet_stg.subnet_ids["snet-apps-stg-uaenorth-01"]
+  acr_id              = module.acr_stg.id
   node_count          = 2
   vm_size             = "Standard_D2s_v3"
   tags                = var.tags
@@ -104,34 +121,34 @@ module "aks_staging" {
 # ---------------------------------------------------------
 # Private DNS Zones (PostgreSQL + Redis)
 # ---------------------------------------------------------
-module "postgres_dns_zone_staging" {
+module "postgres_dns_zone_stg" {
   source              = "../../modules/private-dns-zone"
   zone_name           = "privatelink.postgres.database.azure.com"
-  resource_group_name = module.rg_staging.name
-  vnet_id             = module.vnet_staging.vnet_id
+  resource_group_name = module.rg_stg.name
+  vnet_id             = module.vnet_stg.vnet_id
   tags                = var.tags
 }
 
-module "redis_dns_zone_staging" {
+module "redis_dns_zone_stg" {
   source              = "../../modules/private-dns-zone"
   zone_name           = "privatelink.redis.cache.windows.net"
-  resource_group_name = module.rg_staging.name
-  vnet_id             = module.vnet_staging.vnet_id
+  resource_group_name = module.rg_stg.name
+  vnet_id             = module.vnet_stg.vnet_id
   tags                = var.tags
 }
 
 # ---------------------------------------------------------
 # PostgreSQL Flexible Server
 # ---------------------------------------------------------
-module "postgresql_staging" {
+module "postgresql_stg" {
   source                 = "../../modules/postgresql"
-  name                   = "psql-viwell-staging-uaenorth-01"
-  resource_group_name    = module.rg_staging.name
+  name                   = "psql-viwell-stg-uaenorth-01"
+  resource_group_name    = module.rg_stg.name
   location               = var.location
   administrator_login    = var.postgres_administrator_login
   administrator_password = var.postgres_administrator_password
-  delegated_subnet_id    = module.vnet_staging.subnet_ids["snet-db-staging-uaenorth-01"]
-  private_dns_zone_id    = module.postgres_dns_zone_staging.id
+  delegated_subnet_id    = module.vnet_stg.subnet_ids["snet-db-stg-uaenorth-01"]
+  private_dns_zone_id    = module.postgres_dns_zone_stg.id
   sku_name               = "GP_Standard_D2ds_v5"
   tags                   = var.tags
 }
@@ -139,40 +156,40 @@ module "postgresql_staging" {
 # ---------------------------------------------------------
 # Function App
 # ---------------------------------------------------------
-module "function_app_staging" {
+module "function_app_stg" {
   source               = "../../modules/function-app"
-  name                 = "func-viwell-staging-uaenorth-01"
-  resource_group_name  = module.rg_staging.name
+  name                 = "func-viwell-stg-uaenorth-01"
+  resource_group_name  = module.rg_stg.name
   location             = var.location
   storage_account_name = "stviwellnpuaenorth01"
-  vnet_subnet_id       = module.vnet_staging.subnet_ids["snet-funcapp-staging-uaenorth-01"]
+  vnet_subnet_id       = module.vnet_stg.subnet_ids["snet-funcapp-stg-uaenorth-01"]
   tags                 = var.tags
 }
 
 # ---------------------------------------------------------
 # Redis Cache
 # ---------------------------------------------------------
-module "redis_staging" {
+module "redis_stg" {
   source                     = "../../modules/redis"
-  name                       = "redis-viwell-staging-uaenorth-01"
-  resource_group_name        = module.rg_staging.name
+  name                       = "redis-viwell-stg-uaenorth-01"
+  resource_group_name        = module.rg_stg.name
   location                   = var.location
   sku_name                   = "Balanced_B0"
   high_availability_enabled  = false
   enable_private_endpoint    = true
-  private_endpoint_subnet_id = module.vnet_staging.subnet_ids["snet-prvtendpt-staging-uaenorth-01"]
-  private_dns_zone_ids       = [module.redis_dns_zone_staging.id]
+  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaenorth-01"]
+  private_dns_zone_ids       = [module.redis_dns_zone_stg.id]
   tags                       = var.tags
 }
 
 # ---------------------------------------------------------
 # Event Hub
 # ---------------------------------------------------------
-module "eventhub_staging" {
+module "eventhub_stg" {
   source              = "../../modules/eventhub"
-  namespace_name      = "evhns-viwell-staging-uaenorth-01"
-  eventhub_name       = "evh-viwell-staging-uaenorth-01"
-  resource_group_name = module.rg_staging.name
+  namespace_name      = "evhns-viwell-stg-uaenorth-01"
+  eventhub_name       = "evh-viwell-stg-uaenorth-01"
+  resource_group_name = module.rg_stg.name
   location            = var.location
   sku                 = "Standard"
   capacity            = 1
@@ -182,12 +199,12 @@ module "eventhub_staging" {
 # ---------------------------------------------------------
 # KeyVault
 # ---------------------------------------------------------
-module "keyvault_staging" {
+module "keyvault_stg" {
   source                     = "../../modules/keyvault"
-  name                       = "kv-viewell-uaenorth-01"
-  resource_group_name        = module.rg_staging.name
+  name                       = "kv-viwell-stg-uaenorth-01"
+  resource_group_name        = module.rg_stg.name
   location                   = var.location
-  private_endpoint_subnet_id = module.vnet_staging.subnet_ids["snet-prvtendpt-staging-uaenorth-01"]
+  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaenorth-01"]
   sku_name                   = "standard"
   tenant_id                  = var.tenant_id
   tags                       = var.tags

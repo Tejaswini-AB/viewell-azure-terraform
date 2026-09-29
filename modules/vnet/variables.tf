@@ -25,15 +25,35 @@ variable "subnets" {
       service_endpoints   - optional, list(string)
       delegation_name     - optional, string, name of the delegation block
       delegation_service  - optional, string, e.g. "Microsoft.DBforPostgreSQL/flexibleServers"
+      nsg_name             - optional, string, name of the Network Security Group
+      nsg_rules            - optional, list of NSG security rules
   EOT
+
   type = map(object({
     address_prefixes   = list(string)
     service_endpoints  = optional(list(string), [])
     delegation_name    = optional(string)
     delegation_service = optional(string)
+
+    nsg_name = optional(string)
+
+    nsg_rules = optional(list(object({
+      name                       = string
+      priority                   = number
+      direction                  = string
+      access                     = string
+      protocol                   = string
+      source_port_range          = optional(string, "*")
+      destination_port_range     = optional(string, "*")
+      source_address_prefix     = optional(string, "*")
+      destination_address_prefix = optional(string, "*")
+      description                = optional(string)
+    })), [])
   }))
+
   default = {}
 }
+
 
 variable "tags" {
   description = "Tags to apply to the virtual network"
