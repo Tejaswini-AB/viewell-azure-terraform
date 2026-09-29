@@ -2,7 +2,7 @@ resource "azurerm_key_vault" "this" {
   name                          = "kv-viewell-uaenorth-01"
   location                      = var.location
   resource_group_name           = var.resource_group_name
-  sku                           = var.sku_name
+  sku_name                      = var.sku_name
   enable_rbac_authorization     = true
   public_network_access_enabled = false
 }
