@@ -5,6 +5,7 @@ resource "azurerm_key_vault" "this" {
   sku_name                      = var.sku_name
   enable_rbac_authorization     = true
   public_network_access_enabled = false
+  tenant_id                     = var.tenant_id
 }
 
 resource "azurerm_private_endpoint" "keyvault" {

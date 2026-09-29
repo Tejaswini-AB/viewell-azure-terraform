@@ -189,6 +189,7 @@ module "keyvault_staging" {
   location                   = var.location
   private_endpoint_subnet_id = module.vnet_staging.subnet_ids["snet-prvtendpt-nonprod-uaenorth-01"]
   sku_name                   = "Standard"
+  tenant_id                  = var.tenant_id
   tags                       = var.tags
 }
 

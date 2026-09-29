@@ -30,3 +30,7 @@ variable "tags" {
     managed_by  = "terraform"
   }
 }
+
+variable "tenant_id" {
+  type = string
+}
