@@ -47,5 +47,5 @@ module "front_door" {
   resource_group_name = module.rg_global.name
   endpoint_name       = "viwell"
   sku_name            = "Premium_AzureFrontDoor"
-  tags = var.tags
+  tags                = var.tags
 }
