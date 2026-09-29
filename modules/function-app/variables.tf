@@ -18,6 +18,11 @@ variable "storage_account_name" {
   type        = string
 }
 
+variable "appservice_plan_name" {
+  description = "Name of the App Service Plan"
+  type        = string
+}
+
 variable "service_plan_sku" {
   description = "SKU for the App Service Plan, e.g. Y1 (consumption), EP1 (premium)"
   type        = string

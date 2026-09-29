@@ -22,7 +22,7 @@ resource "azurerm_managed_redis" "this" {
 
 resource "azurerm_private_endpoint" "this" {
   count               = var.enable_private_endpoint ? 1 : 0
-  name                = "pe-${var.name}"
+  name                = "pep-${var.name}"
   resource_group_name = var.resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoint_subnet_id

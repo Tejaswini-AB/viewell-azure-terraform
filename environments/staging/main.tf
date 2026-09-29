@@ -55,7 +55,7 @@ module "vnet_stg" {
     "snet-apps-stg-uaenorth-01" = {
       address_prefixes = ["10.20.0.64/26"]
 
-      nsg_name = "nsg-app"
+      nsg_name = "nsg-app-stg-uaenorth-01"
 
       nsg_rules = [
         {
@@ -84,6 +84,23 @@ module "vnet_stg" {
       address_prefixes   = ["10.20.0.192/27"]
       delegation_name    = "postgres-delegation"
       delegation_service = "Microsoft.DBforPostgreSQL/flexibleServers"
+
+      nsg_name = "nsg-db-stg-uaenorth-01"
+
+      nsg_rules = [
+        {
+          name                       = "Allow-PostgreSQL-Outbound"
+          priority                   = 100
+          direction                  = "Outbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "5432"
+          source_address_prefix      = "*"
+          destination_address_prefix = "*"
+          description                = "Allow outbound PostgreSQL connectivity for migration"
+        }
+      ]
     }
   }
 
@@ -161,7 +178,8 @@ module "function_app_stg" {
   name                 = "func-viwell-stg-uaenorth-01"
   resource_group_name  = module.rg_stg.name
   location             = var.location
-  storage_account_name = "stviwellnpuaenorth01"
+  storage_account_name = "stviwellfunuaenorth01"
+  appservice_plan_name = "asp-viwell-stg-uaenorth-01"
   vnet_subnet_id       = module.vnet_stg.subnet_ids["snet-funcapp-stg-uaenorth-01"]
   tags                 = var.tags
 }
