@@ -32,7 +32,7 @@ resource "azurerm_windows_function_app" "this" {
 
   site_config {
     application_stack {
-      node_version = "20"
+      node_version = "~20"
     }
   }
 }
