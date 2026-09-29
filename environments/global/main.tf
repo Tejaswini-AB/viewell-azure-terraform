@@ -28,7 +28,7 @@ provider "azurerm" {
 # ---------------------------------------------------------
 data "terraform_remote_state" "hub" {
   backend = "azurerm"
-  config  = {
+  config = {
     resource_group_name  = "rg-tfstate-uaenorth-01"
     storage_account_name = "sttfstateuaenorth01"
     container_name       = "tfstate"
@@ -38,7 +38,7 @@ data "terraform_remote_state" "hub" {
 
 data "terraform_remote_state" "staging" {
   backend = "azurerm"
-  config  = {
+  config = {
     resource_group_name  = "rg-tfstate-uaenorth-01"
     storage_account_name = "sttfstateuaenorth01"
     container_name       = "tfstate"
@@ -48,7 +48,7 @@ data "terraform_remote_state" "staging" {
 
 data "terraform_remote_state" "production" {
   backend = "azurerm"
-  config  = {
+  config = {
     resource_group_name  = "rg-tfstate-uaenorth-01"
     storage_account_name = "sttfstateuaenorth01"
     container_name       = "tfstate"

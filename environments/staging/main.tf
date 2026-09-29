@@ -183,12 +183,12 @@ module "eventhub_staging" {
 # KeyVault
 # ---------------------------------------------------------
 module "keyvault_staging" {
-  source              = "../../modules/keyvault"
-  name      = "kv-viewell-uaenorth-01"
-  resource_group_name = module.rg_staging.name
-  location            = var.location
+  source                     = "../../modules/keyvault"
+  name                       = "kv-viewell-uaenorth-01"
+  resource_group_name        = module.rg_staging.name
+  location                   = var.location
   private_endpoint_subnet_id = module.vnet_staging.subnet_ids["snet-prvtendpt-nonprod-uaenorth-01"]
-  sku                 = "Standard"
-  tags                = var.tags
+  sku                        = "Standard"
+  tags                       = var.tags
 }
 
