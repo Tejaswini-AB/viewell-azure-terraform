@@ -22,41 +22,6 @@ provider "azurerm" {
 }
 
 # ---------------------------------------------------------
-# Remote state reads — this environment is deployed AFTER hub, staging,
-# and production, since Front Door origins point at resources those
-# environments create. Deploy order: hub -> staging/production -> global.
-# ---------------------------------------------------------
-data "terraform_remote_state" "hub" {
-  backend = "azurerm"
-  config = {
-    resource_group_name  = "rg-tfstate-uaenorth-01"
-    storage_account_name = "sttfstateuaenorth01"
-    container_name       = "tfstate"
-    key                  = "hub.terraform.tfstate"
-  }
-}
-
-data "terraform_remote_state" "staging" {
-  backend = "azurerm"
-  config = {
-    resource_group_name  = "rg-tfstate-uaenorth-01"
-    storage_account_name = "sttfstateuaenorth01"
-    container_name       = "tfstate"
-    key                  = "staging.terraform.tfstate"
-  }
-}
-
-data "terraform_remote_state" "production" {
-  backend = "azurerm"
-  config = {
-    resource_group_name  = "rg-tfstate-uaenorth-01"
-    storage_account_name = "sttfstateuaenorth01"
-    container_name       = "tfstate"
-    key                  = "production.terraform.tfstate"
-  }
-}
-
-# ---------------------------------------------------------
 # Resource Group for global/shared resources
 # ---------------------------------------------------------
 module "rg_global" {
@@ -82,17 +47,5 @@ module "front_door" {
   resource_group_name = module.rg_global.name
   endpoint_name       = "viwell"
   sku_name            = "Premium_AzureFrontDoor"
-
-  origin_groups = {
-    func_staging = {
-      host_name     = data.terraform_remote_state.staging.outputs.function_app_hostname
-      path_patterns = ["/staging/*"]
-    }
-    func_prod = {
-      host_name     = data.terraform_remote_state.production.outputs.function_app_hostname
-      path_patterns = ["/*"]
-    }
-  }
-
   tags = var.tags
 }
