@@ -9,8 +9,8 @@ resource "azurerm_key_vault" "this" {
 }
 
 resource "azurerm_private_endpoint" "keyvault" {
-  name                = "privatelink.keyvault.database.azure.com"
-  location            = "pe-${var.name}"
+  name                = "pe-${var.name}"
+  location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.private_endpoint_subnet_id
 
