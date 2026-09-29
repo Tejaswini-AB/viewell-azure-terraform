@@ -29,7 +29,7 @@ provider "azurerm" {
 # ---------------------------------------------------------
 module "rg_hub" {
   source   = "../../modules/resource-group"
-  name     = "rg-vnet-hub-uaenorth-01"
+  name     = "rg-viwell-hub-uaenorth-01"
   location = var.location
   tags     = var.tags
 }
@@ -39,7 +39,7 @@ module "rg_hub" {
 # ---------------------------------------------------------
 module "vnet_hub" {
   source              = "../../modules/vnet"
-  name                = "vnet-viwell-hub-uaenorth-01"
+  name                = "vnet-hub-uaenorth-01"
   resource_group_name = module.rg_hub.name
   location            = var.location
   address_space       = ["10.10.0.0/16"]

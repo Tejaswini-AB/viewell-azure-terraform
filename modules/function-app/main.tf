@@ -18,16 +18,21 @@ resource "azurerm_service_plan" "this" {
   tags                   = var.tags
 }
 
-resource "azurerm_linux_function_app" "this" {
+resource "azurerm_windows_function_app" "this" {
   name                       = var.name
   resource_group_name        = var.resource_group_name
   location                   = var.location
   service_plan_id            = azurerm_service_plan.this.id
   storage_account_name       = azurerm_storage_account.this.name
   storage_account_access_key = azurerm_storage_account.this.primary_access_key
-  app_settings               = var.app_settings
-  virtual_network_subnet_id  = var.vnet_subnet_id
-  tags                       = var.tags
 
-  site_config {}
+  app_settings              = var.app_settings
+  virtual_network_subnet_id = var.vnet_subnet_id
+  tags                      = var.tags
+
+  site_config {
+    application_stack {
+      node_version = "20"
+    }
+  }
 }
