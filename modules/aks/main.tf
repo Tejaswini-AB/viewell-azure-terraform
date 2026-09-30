@@ -5,6 +5,8 @@ resource "azurerm_kubernetes_cluster" "this" {
   dns_prefix          = var.dns_prefix
   kubernetes_version  = var.kubernetes_version
   tags                = var.tags
+  private_cluster_enabled = true
+
 
   default_node_pool {
     name           = var.node_pool_name
