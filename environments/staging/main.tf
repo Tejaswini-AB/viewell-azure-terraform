@@ -29,14 +29,14 @@ provider "azurerm" {
 # ---------------------------------------------------------
 module "rg_network_stg" {
   source   = "../../modules/resource-group"
-  name     = "rg-network-stg-uaenorth-01"
+  name     = "rg-network-stg-uaen-01"
   location = var.location
   tags     = var.tags
 }
 
 module "rg_stg" {
   source   = "../../modules/resource-group"
-  name     = "rg-viwell-stg-uaenorth-01"
+  name     = "rg-viwell-stg-uaen-01"
   location = var.location
   tags     = var.tags
 }
@@ -46,16 +46,16 @@ module "rg_stg" {
 # ---------------------------------------------------------
 module "vnet_stg" {
   source              = "../../modules/vnet"
-  name                = "vnet-viwell-stg-uaenorth-01"
+  name                = "vnet-viwell-stg-uaen-01"
   resource_group_name = module.rg_network_stg.name
   location            = var.location
   address_space       = ["10.20.0.0/16"]
 
   subnets = {
-    "snet-apps-stg-uaenorth-01" = {
+    "snet-app-stg-uaen-01" = {
       address_prefixes = ["10.20.0.64/26"]
 
-      nsg_name = "nsg-app-stg-uaenorth-01"
+      nsg_name = "nsg-app-stg-uaen-01"
 
       nsg_rules = [
         {
@@ -72,20 +72,20 @@ module "vnet_stg" {
         }
       ]
     }
-    "snet-funcapp-stg-uaenorth-01" = {
+    "snet-func-stg-uaen-01" = {
       address_prefixes   = ["10.20.2.0/26"]
       delegation_name    = "appservice-delegation"
       delegation_service = "Microsoft.Web/serverFarms"
     }
-    "snet-prvtendpt-stg-uaenorth-01" = {
+    "snet-pep-stg-uaen-01" = {
       address_prefixes = ["10.20.0.128/26"]
     }
-    "snet-db-stg-uaenorth-01" = {
+    "snet-db-stg-uaen-01" = {
       address_prefixes   = ["10.20.0.192/27"]
       delegation_name    = "postgres-delegation"
       delegation_service = "Microsoft.DBforPostgreSQL/flexibleServers"
 
-      nsg_name = "nsg-db-stg-uaenorth-01"
+      nsg_name = "nsg-db-stg-uaen-01"
 
       nsg_rules = [
         {
@@ -112,7 +112,7 @@ module "vnet_stg" {
 # ---------------------------------------------------------
 module "acr_stg" {
   source              = "../../modules/acr"
-  name                = "acrviwellstguaenorth01"
+  name                = "acrviwellstguaen01"
   resource_group_name = module.rg_stg.name
   location            = var.location
   sku                 = "Standard"
@@ -124,11 +124,11 @@ module "acr_stg" {
 # ---------------------------------------------------------
 module "aks_stg" {
   source              = "../../modules/aks"
-  name                = "aks-viwell-stg-uaenorth-01"
+  name                = "aks-viwell-stg-uaen-01"
   resource_group_name = module.rg_stg.name
   location            = var.location
   dns_prefix          = "aksviwellstg"
-  vnet_subnet_id      = module.vnet_stg.subnet_ids["snet-apps-stg-uaenorth-01"]
+  vnet_subnet_id      = module.vnet_stg.subnet_ids["snet-apps-stg-uaen-01"]
   acr_id              = module.acr_stg.id
   node_count          = 2
   vm_size             = "Standard_D4as_v5"
@@ -159,12 +159,12 @@ module "redis_dns_zone_stg" {
 # ---------------------------------------------------------
 module "postgresql_stg" {
   source                 = "../../modules/postgresql"
-  name                   = "psql-viwell-stg-uaenorth-01"
+  name                   = "psql-viwell-stg-uaen-01"
   resource_group_name    = module.rg_stg.name
   location               = var.location
   administrator_login    = var.postgres_administrator_login
   administrator_password = var.postgres_administrator_password
-  delegated_subnet_id    = module.vnet_stg.subnet_ids["snet-db-stg-uaenorth-01"]
+  delegated_subnet_id    = module.vnet_stg.subnet_ids["snet-db-stg-uaen-01"]
   private_dns_zone_id    = module.postgres_dns_zone_stg.id
   sku_name               = "GP_Standard_D2ds_v5"
   tags                   = var.tags
@@ -175,13 +175,13 @@ module "postgresql_stg" {
 # ---------------------------------------------------------
 module "function_app_stg" {
   source                     = "../../modules/function-app"
-  name                       = "func-viwell-stg-uaenorth-01"
+  name                       = "func-viwell-stg-uaen-01"
   resource_group_name        = module.rg_stg.name
   location                   = var.location
-  storage_account_name       = "stviwellfunuaenorth01"
-  appservice_plan_name       = "asp-viwell-stg-uaenorth-01"
-  vnet_subnet_id             = module.vnet_stg.subnet_ids["snet-funcapp-stg-uaenorth-01"]
-  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaenorth-01"]
+  storage_account_name       = "stviwellfunuaen01"
+  appservice_plan_name       = "asp-viwell-stg-uaen-01"
+  vnet_subnet_id             = module.vnet_stg.subnet_ids["snet-funcapp-stg-uaen-01"]
+  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaen-01"]
   tags                       = var.tags
 }
 
@@ -190,13 +190,13 @@ module "function_app_stg" {
 # ---------------------------------------------------------
 module "redis_stg" {
   source                     = "../../modules/redis"
-  name                       = "redis-viwell-stg-uaenorth-01"
+  name                       = "redis-viwell-stg-uaen-01"
   resource_group_name        = module.rg_stg.name
   location                   = var.location
   sku_name                   = "Balanced_B0"
   high_availability_enabled  = false
   enable_private_endpoint    = true
-  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaenorth-01"]
+  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaen-01"]
   private_dns_zone_ids       = [module.redis_dns_zone_stg.id]
   tags                       = var.tags
 }
@@ -206,8 +206,8 @@ module "redis_stg" {
 # ---------------------------------------------------------
 module "eventhub_stg" {
   source              = "../../modules/eventhub"
-  namespace_name      = "evhns-viwell-stg-uaenorth-01"
-  eventhub_name       = "evh-viwell-stg-uaenorth-01"
+  namespace_name      = "evhns-viwell-stg-uaen-01"
+  eventhub_name       = "evh-viwell-stg-uaen-01"
   resource_group_name = module.rg_stg.name
   location            = var.location
   sku                 = "Standard"
@@ -220,10 +220,10 @@ module "eventhub_stg" {
 # ---------------------------------------------------------
 module "keyvault_stg" {
   source                     = "../../modules/keyvault"
-  name                       = "kv-viwell-stg-uaenorth-01"
+  name                       = "kv-viwell-stg-uaen-01"
   resource_group_name        = module.rg_stg.name
   location                   = var.location
-  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaenorth-01"]
+  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaen-01"]
   sku_name                   = "standard"
   tenant_id                  = var.tenant_id
   tags                       = var.tags
