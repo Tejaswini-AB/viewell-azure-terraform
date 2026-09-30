@@ -7,9 +7,9 @@
 # ---------------------------------------------------------------------------
 set -euo pipefail
 
-LOCATION="uaenorth"
-RG_NAME="rg-tfstate-uaenorth-01"
-SA_NAME="sttfstateuaenorth01"   # must be globally unique, lowercase, <=24 chars
+LOCATION="uaen"
+RG_NAME="rg-tfstate-uaen-01"
+SA_NAME="sttfstateuaen01"   # must be globally unique, lowercase, <=24 chars
 CONTAINER_NAME="tfstate"
 
 echo "Logging in (uses your current az cli session / az login)..."
@@ -45,7 +45,7 @@ az storage container create \
 
 echo ""
 echo "Done. Backend values to use in each environment's main.tf:"
-echo "  resource_group_name  = \"$RG_NAME\""
+echo "  uaen  = \"$RG_NAME\""
 echo "  storage_account_name = \"$SA_NAME\""
 echo "  container_name        = \"$CONTAINER_NAME\""
 echo "  key                    = \"<environment>.terraform.tfstate\""

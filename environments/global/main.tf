@@ -26,7 +26,7 @@ provider "azurerm" {
 # ---------------------------------------------------------
 module "rg_global" {
   source   = "../../modules/resource-group"
-  name     = "rg-viwell-global-uaenorth-01"
+  name     = "rg-viwell-global-uaen-01"
   location = var.location
   tags     = var.tags
 }
@@ -43,7 +43,7 @@ module "rg_global" {
 # ---------------------------------------------------------
 module "front_door" {
   source              = "../../modules/front-door"
-  profile_name        = "fd-viwell-uaenorth-01"
+  profile_name        = "fd-viwell-uaen-01"
   resource_group_name = module.rg_global.name
   endpoint_name       = "viwell"
   sku_name            = "Premium_AzureFrontDoor"
