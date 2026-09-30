@@ -181,7 +181,7 @@ module "function_app_stg" {
   storage_account_name       = "stviwellfunuaen01"
   appservice_plan_name       = "asp-viwell-stg-uaen-01"
   vnet_subnet_id             = module.vnet_stg.subnet_ids["snet-funcapp-stg-uaen-01"]
-  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaen-01"]
+  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-pep-stg-uaen-01"]
   tags                       = var.tags
 }
 
@@ -196,7 +196,7 @@ module "redis_stg" {
   sku_name                   = "Balanced_B0"
   high_availability_enabled  = false
   enable_private_endpoint    = true
-  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaen-01"]
+  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-pep-stg-uaen-01"]
   private_dns_zone_ids       = [module.redis_dns_zone_stg.id]
   tags                       = var.tags
 }
@@ -223,7 +223,7 @@ module "keyvault_stg" {
   name                       = "kv-viwell-stg-uaen-01"
   resource_group_name        = module.rg_stg.name
   location                   = var.location
-  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-prvtendpt-stg-uaen-01"]
+  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-pep-stg-uaen-01"]
   sku_name                   = "standard"
   tenant_id                  = var.tenant_id
   tags                       = var.tags
