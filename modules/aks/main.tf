@@ -1,10 +1,10 @@
 resource "azurerm_kubernetes_cluster" "this" {
-  name                = var.name
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  dns_prefix          = var.dns_prefix
-  kubernetes_version  = var.kubernetes_version
-  tags                = var.tags
+  name                    = var.name
+  resource_group_name     = var.resource_group_name
+  location                = var.location
+  dns_prefix              = var.dns_prefix
+  kubernetes_version      = var.kubernetes_version
+  tags                    = var.tags
   private_cluster_enabled = true
 
 
