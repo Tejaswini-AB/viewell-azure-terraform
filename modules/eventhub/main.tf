@@ -3,6 +3,7 @@ resource "azurerm_eventhub_namespace" "this" {
   resource_group_name = var.resource_group_name
   location            = var.location
   sku                 = var.sku
+  subnet_id           = var.private_endpoint_subnet_id
   capacity            = var.capacity
   tags                = var.tags
 }

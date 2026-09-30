@@ -8,6 +8,12 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "private_endpoint_subnet_id" {
+  description = "Subnet ID to deploy the private endpoint into (required if enable_private_endpoint is true)"
+  type        = string
+  default     = null
+}
+
 variable "location" {
   description = "Azure region"
   type        = string

@@ -211,6 +211,7 @@ module "eventhub_stg" {
   resource_group_name = module.rg_stg.name
   location            = var.location
   sku                 = "Standard"
+  private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-pep-stg-uaen-01"]
   capacity            = 1
   tags                = var.tags
 }
