@@ -19,35 +19,6 @@ variable "endpoint_name" {
   type        = string
 }
 
-variable "origin_groups" {
-  description = <<-EOT
-    Map of backend targets to front, keyed by a short name (e.g. "aks_staging",
-    "func_staging"). Each creates its own origin group + origin + route.
-  EOT
-  type = map(object({
-    host_name                      = string
-    http_port                      = optional(number, 80)
-    https_port                     = optional(number, 443)
-    priority                       = optional(number, 1)
-    weight                         = optional(number, 500)
-    certificate_name_check_enabled = optional(bool, true)
-    path_patterns                  = list(string)
-    forwarding_protocol            = optional(string, "HttpsOnly")
-  }))
-}
-
-variable "waf_mode" {
-  description = "Prevention (blocks matched requests) or Detection (logs only)"
-  type        = string
-  default     = "Prevention"
-}
-
-variable "enable_managed_waf_rules" {
-  description = "Enable Microsoft-managed WAF rule sets (DefaultRuleSet + BotManagerRuleSet). Requires Premium_AzureFrontDoor SKU."
-  type        = bool
-  default     = true
-}
-
 variable "tags" {
   description = "Tags to apply"
   type        = map(string)
