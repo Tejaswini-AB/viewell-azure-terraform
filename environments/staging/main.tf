@@ -131,7 +131,7 @@ module "aks_stg" {
   vnet_subnet_id      = module.vnet_stg.subnet_ids["snet-apps-stg-uaenorth-01"]
   acr_id              = module.acr_stg.id
   node_count          = 2
-  vm_size             = "Standard_D2s_v3"
+  vm_size             = "Standard_D4as_v5"
   tags                = var.tags
 }
 
