@@ -128,7 +128,7 @@ module "aks_stg" {
   resource_group_name = module.rg_stg.name
   location            = var.location
   dns_prefix          = "aksviwellstg"
-  vnet_subnet_id      = module.vnet_stg.subnet_ids["snet-apps-stg-uaen-01"]
+  vnet_subnet_id      = module.vnet_stg.subnet_ids["snet-app-stg-uaen-01"]
   acr_id              = module.acr_stg.id
   node_count          = 2
   vm_size             = "Standard_D4as_v5"
@@ -180,7 +180,7 @@ module "function_app_stg" {
   location                   = var.location
   storage_account_name       = "stviwellfunuaen01"
   appservice_plan_name       = "asp-viwell-stg-uaen-01"
-  vnet_subnet_id             = module.vnet_stg.subnet_ids["snet-funcapp-stg-uaen-01"]
+  vnet_subnet_id             = module.vnet_stg.subnet_ids["snet-func-stg-uaen-01"]
   private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-pep-stg-uaen-01"]
   tags                       = var.tags
 }
