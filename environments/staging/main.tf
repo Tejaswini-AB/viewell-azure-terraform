@@ -205,15 +205,15 @@ module "redis_stg" {
 # Event Hub
 # ---------------------------------------------------------
 module "eventhub_stg" {
-  source              = "../../modules/eventhub"
-  namespace_name      = "evhns-viwell-stg-uaen-01"
-  eventhub_name       = "evh-viwell-stg-uaen-01"
-  resource_group_name = module.rg_stg.name
-  location            = var.location
-  sku                 = "Standard"
+  source                     = "../../modules/eventhub"
+  namespace_name             = "evhns-viwell-stg-uaen-01"
+  eventhub_name              = "evh-viwell-stg-uaen-01"
+  resource_group_name        = module.rg_stg.name
+  location                   = var.location
+  sku                        = "Standard"
   private_endpoint_subnet_id = module.vnet_stg.subnet_ids["snet-pep-stg-uaen-01"]
-  capacity            = 1
-  tags                = var.tags
+  capacity                   = 1
+  tags                       = var.tags
 }
 
 # ---------------------------------------------------------
