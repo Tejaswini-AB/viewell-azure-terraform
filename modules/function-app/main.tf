@@ -48,7 +48,7 @@ resource "azurerm_private_endpoint" "storageacct" {
     name                           = "psc-${var.name}"
     private_connection_resource_id = azurerm_storage_account.this.id
     is_manual_connection           = false
-    subresource_names              = ["funappstorageacct"]
+    subresource_names              = ["blob"]
   }
 }
 
@@ -63,6 +63,6 @@ resource "azurerm_private_endpoint" "this" {
     name                           = "psc-${var.name}"
     private_connection_resource_id = azurerm_windows_function_app.this.id
     is_manual_connection           = false
-    subresource_names              = ["eventhub"]
+    subresource_names              = ["sites"]
   }
 }
