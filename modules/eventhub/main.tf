@@ -1,10 +1,11 @@
 resource "azurerm_eventhub_namespace" "this" {
-  name                = var.namespace_name
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  sku                 = var.sku
-  capacity            = var.capacity
-  tags                = var.tags
+  name                          = var.namespace_name
+  resource_group_name           = var.resource_group_name
+  location                      = var.location
+  sku                           = var.sku
+  capacity                      = var.capacity
+  public_network_access_enabled = false
+  tags                          = var.tags
 }
 
 resource "azurerm_eventhub" "this" {

@@ -76,6 +76,23 @@ module "vnet_stg" {
       address_prefixes   = ["10.20.2.0/26"]
       delegation_name    = "appservice-delegation"
       delegation_service = "Microsoft.Web/serverFarms"
+
+      nsg_name = "nsg-fun-stg-uaen-01"
+
+      nsg_rules = [
+        {
+          name                       = "Allow-HTTPS"
+          priority                   = 100
+          direction                  = "Inbound"
+          access                     = "Allow"
+          protocol                   = "Tcp"
+          source_port_range          = "*"
+          destination_port_range     = "443"
+          source_address_prefix      = "*"
+          destination_address_prefix = "*"
+          description                = "Allow HTTPS inbound"
+        }
+      ]
     }
     "snet-pep-stg-uaen-01" = {
       address_prefixes = ["10.20.0.128/26"]
