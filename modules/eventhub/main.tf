@@ -21,7 +21,7 @@ resource "azurerm_private_endpoint" "this" {
   subnet_id           = var.private_endpoint_subnet_id
 
   private_service_connection {
-    name                           = "psc-${var.name}"
+    name                           = "psc-${var.namespace_name}"
     private_connection_resource_id = azurerm_eventhub_namespace.this.id
     is_manual_connection           = false
     subresource_names              = ["eventhub"]
