@@ -3,7 +3,6 @@ resource "azurerm_eventhub_namespace" "this" {
   resource_group_name = var.resource_group_name
   location            = var.location
   sku                 = var.sku
-  subnet_id           = var.private_endpoint_subnet_id
   capacity            = var.capacity
   tags                = var.tags
 }
@@ -13,4 +12,18 @@ resource "azurerm_eventhub" "this" {
   namespace_id      = azurerm_eventhub_namespace.this.id
   partition_count   = var.partition_count
   message_retention = var.message_retention
+}
+
+resource "azurerm_private_endpoint" "this" {
+  name                = "pep-${var.name}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.private_endpoint_subnet_id
+
+  private_service_connection {
+    name                           = "psc-${var.name}"
+    private_connection_resource_id = azurerm_eventhub_namespace.this.id
+    is_manual_connection           = false
+    subresource_names              = ["eventhub"]
+  }
 }
